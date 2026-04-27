@@ -18,7 +18,7 @@ const ai = () => {
 };
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
-  const fallbackChain = Array.from(new Set([modelId, 'gemini-2.0-flash-exp', 'gemini-flash-latest']));
+  const fallbackChain = Array.from(new Set([modelId, 'gemini-3.1-flash-tts', 'gemini-1.5-flash-tts']));
   let lastError: any;
 
   for (const model of fallbackChain) {
@@ -55,7 +55,7 @@ export async function generateTTS(
   try {
     const instruction = `Speak at ${speed === 1.0 ? 'normal' : speed > 1.0 ? 'fast' : 'slow'} speed and ${pitch === 1.0 ? 'normal' : pitch > 1.0 ? 'high' : 'low'} pitch: ${text}`;
 
-    const response = await executeWithFallback(genAI, "gemini-2.0-flash-exp", {
+    const response = await executeWithFallback(genAI, "gemini-3.1-flash-tts", {
       contents: [{ parts: [{ text: instruction }] }],
       config: {
         responseModalities: [Modality.AUDIO],

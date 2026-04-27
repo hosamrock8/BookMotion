@@ -13,7 +13,7 @@ export type FrameRate = 24 | 30 | 60;
 
 export type AppLanguage = 'en' | 'ar' | 'es' | 'fr';
 
-export type AIModel = 'gemini-2.0-flash';
+export type AIModel = 'gemini-3.1-flash';
 
 export interface ProductionSettings {
   projectTitle: string;
