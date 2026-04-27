@@ -57,7 +57,8 @@ export async function generateMovieSummary(input: string, settings?: ProductionS
     }
   });
 
-  return response.text || "";
+  const responseText = await response.response.text() || "";
+  return responseText;
 }
 
 export async function generateCharacterDesign(summary: string, settings?: ProductionSettings): Promise<string> {
@@ -74,7 +75,8 @@ export async function generateCharacterDesign(summary: string, settings?: Produc
     }
   });
 
-  return response.text || "";
+  const responseText = await response.response.text() || "";
+  return responseText;
 }
 
 export async function generateStoryboard(summary: string, style: string, characterDesign: string, settings: ProductionSettings): Promise<Scene[]> {
@@ -134,7 +136,7 @@ export async function generateStoryboard(summary: string, style: string, charact
     },
   });
 
-  const responseText = response.text || "[]";
+  const responseText = await response.response.text() || "[]";
   let cleanText = responseText.replace(/json/gi, '').replace(/```/gi, '').trim();
   const rawScenes = JSON.parse(cleanText);
 
