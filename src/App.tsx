@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// BookMotion Narrative Studio - Version 4.0.1 - RECOVERY_DEPLOY
 import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from 'react';
 import { MovieForm } from './components/MovieForm';
 import { SceneCard } from './components/SceneCard';

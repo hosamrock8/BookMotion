@@ -17,16 +17,15 @@ const ai = () => {
   return key ? new GoogleGenAI({ apiKey: key, apiVersion: 'v1beta' }) : null;
 };
 
-const getModelId = (model: string) => {
-  if (model.includes('gemini-2.0')) return 'gemini-3.1-flash-lite-preview';
-  return 'gemini-3.1-flash-lite-preview';
-};
+
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
   try {
+    const activeModel = "gemini-2.0-flash";
+    console.log(`[Neural Engine] Engaging core model: ${activeModel}`);
     return await genAI.models.generateContent({
       ...payload,
-      model: "gemini-2.0-flash"
+      model: activeModel
     });
   } catch (err: any) {
     throw err;
