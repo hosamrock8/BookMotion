@@ -1,0 +1,6 @@
+{
+  "name": "BookMotion: AI Narrative Studio",
+  "description": "تحويل الكتب والملفات النصية إلى قصص سينمائية متكاملة مع تحليل الشخصيات وتوليد المشاهد البصرية.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["PDF Text Extraction", "Narrative Analysis", "Character Consistency", "Cinema Storyboarding"]
+}
