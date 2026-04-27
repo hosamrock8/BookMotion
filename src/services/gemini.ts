@@ -23,36 +23,20 @@ const getModelId = (model: string) => {
 };
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
-  // Define fallback sequence prioritizing the requested model, then stable backups
-  const fallbackChain = [modelId, 'gemini-3.1-flash-lite-preview', 'gemini-3.1-flash-preview', 'gemini-1.5-flash-latest'];
-  let lastError: any;
-
-  for (const model of fallbackChain) {
-    try {
-      return await genAI.models.generateContent({
-        ...payload,
-        model
-      });
-    } catch (err: any) {
-      lastError = err;
-      const isTransient = err.message?.includes('503') || 
-                          err.message?.includes('high demand') || 
-                          err.status === 'UNAVAILABLE';
-      
-      if (isTransient) {
-        console.warn(`[Neural Engine] ${model} overloaded. Engaging fallback protocols...`);
-        continue;
-      }
-      throw err; // Critical failure (404, 401, etc) - stop immediately
-    }
+  try {
+    return await genAI.models.generateContent({
+      ...payload,
+      model: "gemini-2.0-flash"
+    });
+  } catch (err: any) {
+    throw err;
   }
-  throw lastError;
 };
 
 export async function generateMovieSummary(input: string, settings?: ProductionSettings) {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash-lite-preview';
+  const modelId = 'gemini-2.0-flash';
 
   const isLargeScript = input.length > 500;
   const prompt = isLargeScript 
@@ -79,7 +63,7 @@ export async function generateMovieSummary(input: string, settings?: ProductionS
 export async function generateCharacterDesign(summary: string, settings?: ProductionSettings): Promise<string> {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash-lite-preview';
+  const modelId = 'gemini-2.0-flash';
 
   const response = await executeWithFallback(genAI, modelId, {
     contents: [{ role: 'user', parts: [{ text: `Based on this narrative summary: "${summary}", define the visual appearance of the primary characters to maintain storytelling continuity. 
@@ -96,7 +80,7 @@ export async function generateCharacterDesign(summary: string, settings?: Produc
 export async function generateStoryboard(summary: string, style: string, characterDesign: string, settings: ProductionSettings): Promise<Scene[]> {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash-lite-preview';
+  const modelId = 'gemini-2.0-flash';
 
   const response = await executeWithFallback(genAI, modelId, {
     contents: [{ role: 'user', parts: [{ text: `
@@ -150,24 +134,9 @@ export async function generateStoryboard(summary: string, style: string, charact
     },
   });
 
-  const cleanJson = (text: string) => {
-    return text.replace(/```json\n?|```/g, "").trim();
-  };
-
-  let rawScenes;
-  try {
-    rawScenes = JSON.parse(cleanJson(response.text || "[]"));
-  } catch (e) {
-    console.error("[Neural Engine] JSON Parse Error. Attempting advanced extraction...", e);
-    const text = response.text || "";
-    const start = text.indexOf('[');
-    const end = text.lastIndexOf(']');
-    if (start !== -1 && end !== -1) {
-      rawScenes = JSON.parse(text.substring(start, end + 1));
-    } else {
-      throw new Error("The AI engine returned an invalid data structure. Please try again.");
-    }
-  }
+  const responseText = response.text || "[]";
+  let cleanText = responseText.replace(/json/gi, '').replace(/```/gi, '').trim();
+  const rawScenes = JSON.parse(cleanText);
 
   return rawScenes.map((s: any, index: number) => ({
     id: `scene-${Date.now()}-${index}`,
@@ -205,22 +174,9 @@ export async function generateSceneImage(scene: Scene, style: VisualStyle, aspec
     High-end production quality, 8k resolution, cinematic lighting, professional composition.
   `.trim();
 
-  const response = await executeWithFallback(genAI, 'gemini-3.1-flash-image-preview', {
-    contents: [{
-      parts: [{ text: enhancedPrompt }],
-    }],
-    generationConfig: {
-      imageConfig: {
-        aspectRatio: geminiRatio,
-      },
-    } as any, 
-  });
+  const width = aspectRatio === "16:9" ? 1280 : aspectRatio === "9:16" ? 720 : 1024;
+  const height = aspectRatio === "16:9" ? 720 : aspectRatio === "9:16" ? 1280 : 1024;
+  const seed = Math.floor(Math.random() * 1000000);
 
-  for (const part of response.candidates?.[0].content.parts || []) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
-    }
-  }
-  
-  throw new Error("Failed to generate image");
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=${width}&height=${height}&nologo=true&seed=${seed}`;
 }
