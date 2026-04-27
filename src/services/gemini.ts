@@ -18,12 +18,13 @@ const ai = () => {
 };
 
 const getModelId = (model: string) => {
-  return 'gemini-3.1-flash';
+  if (model.includes('gemini-2.0')) return 'gemini-3.1-flash-lite-preview';
+  return 'gemini-3.1-flash-lite-preview';
 };
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
   // Define fallback sequence prioritizing the requested model, then stable backups
-  const fallbackChain = [modelId, 'gemini-3.1-flash', 'gemini-1.5-flash'];
+  const fallbackChain = [modelId, 'gemini-3.1-flash-lite-preview', 'gemini-1.5-flash'];
   let lastError: any;
 
   for (const model of fallbackChain) {
@@ -51,7 +52,7 @@ const executeWithFallback = async (genAI: any, modelId: string, payload: any) =>
 export async function generateMovieSummary(input: string, settings?: ProductionSettings) {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash';
+  const modelId = 'gemini-3.1-flash-lite-preview';
 
   const isLargeScript = input.length > 500;
   const prompt = isLargeScript 
@@ -78,7 +79,7 @@ export async function generateMovieSummary(input: string, settings?: ProductionS
 export async function generateCharacterDesign(summary: string, settings?: ProductionSettings): Promise<string> {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash';
+  const modelId = 'gemini-3.1-flash-lite-preview';
 
   const response = await executeWithFallback(genAI, modelId, {
     contents: [{ role: 'user', parts: [{ text: `Based on this narrative summary: "${summary}", define the visual appearance of the primary characters to maintain storytelling continuity. 
@@ -95,7 +96,7 @@ export async function generateCharacterDesign(summary: string, settings?: Produc
 export async function generateStoryboard(summary: string, style: string, characterDesign: string, settings: ProductionSettings): Promise<Scene[]> {
   const genAI = ai();
   if (!genAI) throw new Error("Gemini API Key is missing. Please set it in Settings > Engine.");
-  const modelId = 'gemini-3.1-flash';
+  const modelId = 'gemini-3.1-flash-lite-preview';
 
   const response = await executeWithFallback(genAI, modelId, {
     contents: [{ role: 'user', parts: [{ text: `
@@ -186,7 +187,7 @@ export async function generateSceneImage(scene: Scene, style: VisualStyle, aspec
     High-end production quality, 8k resolution, cinematic lighting, professional composition.
   `.trim();
 
-  const response = await executeWithFallback(genAI, 'gemini-3.1-flash-image', {
+  const response = await executeWithFallback(genAI, 'gemini-3.1-flash-image-preview', {
     contents: [{
       parts: [{ text: enhancedPrompt }],
     }],

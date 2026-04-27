@@ -254,7 +254,7 @@ export function SettingsPanel({
                         onChange={(e) => updateSetting('aiModel', e.target.value as AIModel)}
                         className="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-[11px] font-bold text-white outline-none focus:ring-2 focus:ring-red-500 transition-all uppercase"
                       >
-                        <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                        <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite</option>
                       </select>
                     </div>
                     <div className="space-y-4">
@@ -264,7 +264,7 @@ export function SettingsPanel({
                         onChange={(e) => updateSetting('aiModelStoryboard', e.target.value as AIModel)}
                         className="w-full bg-black/60 border border-white/10 rounded-2xl px-5 py-4 text-[11px] font-bold text-white outline-none focus:ring-2 focus:ring-red-500 transition-all uppercase"
                       >
-                        <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                        <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite</option>
                       </select>
                     </div>
                   </div>
