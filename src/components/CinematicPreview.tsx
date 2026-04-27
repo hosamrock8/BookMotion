@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Reorder } from 'motion/react';
-import { Scene, TransitionEffect } from '../types';
+import { Scene, TransitionEffect, ProductionSettings } from '../types';
 import { Play, Pause, SkipForward, SkipBack, Maximize2, Volume2, VolumeX, Zap, Timer, Repeat, Hourglass, ArrowUpRight, Mic, Sliders, PlayCircle, Loader2, Download, Film, Move, ChevronRight, Captions, Settings2, ArrowUp, ArrowDown } from 'lucide-react';
 import { generateTTS } from '../services/ttsService';
 

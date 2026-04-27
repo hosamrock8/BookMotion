@@ -24,7 +24,7 @@ const getModelId = (model: string) => {
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
   // Define fallback sequence prioritizing the requested model, then stable backups
-  const fallbackChain = [modelId, 'gemini-3.1-flash-lite-preview', 'gemini-1.5-flash'];
+  const fallbackChain = [modelId, 'gemini-3.1-flash-lite-preview', 'gemini-3.1-flash-preview', 'gemini-1.5-flash-latest'];
   let lastError: any;
 
   for (const model of fallbackChain) {
@@ -150,7 +150,25 @@ export async function generateStoryboard(summary: string, style: string, charact
     },
   });
 
-  const rawScenes = JSON.parse(response.text || "[]");
+  const cleanJson = (text: string) => {
+    return text.replace(/```json\n?|```/g, "").trim();
+  };
+
+  let rawScenes;
+  try {
+    rawScenes = JSON.parse(cleanJson(response.text || "[]"));
+  } catch (e) {
+    console.error("[Neural Engine] JSON Parse Error. Attempting advanced extraction...", e);
+    const text = response.text || "";
+    const start = text.indexOf('[');
+    const end = text.lastIndexOf(']');
+    if (start !== -1 && end !== -1) {
+      rawScenes = JSON.parse(text.substring(start, end + 1));
+    } else {
+      throw new Error("The AI engine returned an invalid data structure. Please try again.");
+    }
+  }
+
   return rawScenes.map((s: any, index: number) => ({
     id: `scene-${Date.now()}-${index}`,
     order: index,

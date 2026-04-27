@@ -18,7 +18,7 @@ const ai = () => {
 };
 
 const executeWithFallback = async (genAI: any, modelId: string, payload: any) => {
-  const fallbackChain = Array.from(new Set([modelId, 'gemini-3.1-flash-tts-preview', 'gemini-1.5-flash-tts']));
+  const fallbackChain = Array.from(new Set([modelId, 'gemini-3.1-flash-tts-preview', 'gemini-3.1-flash-live-preview', 'gemini-1.5-flash-latest']));
   let lastError: any;
 
   for (const model of fallbackChain) {

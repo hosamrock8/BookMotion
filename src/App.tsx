@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, Component, ErrorInfo, ReactNode } from 'react';
 import { MovieForm } from './components/MovieForm';
 import { SceneCard } from './components/SceneCard';
 import { CinematicPreview } from './components/CinematicPreview';
@@ -14,6 +14,38 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Film, Download, Share2, Sparkles, Wand2, AlertCircle, X, Monitor, Layers, Layout, Users, Settings, Package, ChevronLeft, ChevronRight, Menu, PlayCircle, Loader2, RefreshCw } from 'lucide-react';
 import { extractTextFromPdf, extractTextFromEpub } from './lib/documentUtils';
 import JSZip from 'jszip';
+
+interface ErrorBoundaryProps {
+  children: ReactNode;
+  fallback: (error: Error) => ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Critical UI Failure:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError && this.state.error) {
+      return this.props.fallback(this.state.error);
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [project, setProject] = useState<MovieProject | null>(null);
@@ -315,7 +347,30 @@ export default function App() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen text-slate-200 font-sans relative overflow-x-hidden bg-grid">
+    <ErrorBoundary 
+      fallback={(err) => (
+        <div className="min-h-screen bg-black flex flex-col items-center justify-center p-10 text-center">
+          <div className="w-24 h-24 bg-red-600/20 rounded-[2.5rem] flex items-center justify-center text-red-500 mb-8 border border-red-500/30 shadow-[0_0_50px_rgba(220,38,38,0.2)]">
+            <AlertCircle className="w-12 h-12" />
+          </div>
+          <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter mb-4">Neural Engine Crash</h1>
+          <p className="text-gray-500 font-mono text-[10px] uppercase tracking-widest mb-10 max-w-lg">
+            A critical fault occurred during UI synthesis. This is usually caused by invalid data structures or missing neural assets.
+          </p>
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 mb-10 max-w-2xl w-full text-left">
+            <p className="text-red-500 font-mono text-[10px] uppercase tracking-widest mb-2">Technical Error Diagnostic:</p>
+            <p className="text-gray-400 font-mono text-xs">{err.message}</p>
+          </div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-10 py-4 bg-red-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-2xl italic"
+          >
+            Reboot Core
+          </button>
+        </div>
+      )}
+    >
+      <div className="bg-[#050505] min-h-screen text-slate-200 font-sans relative overflow-x-hidden bg-grid">
       <div className="max-w-[1600px] mx-auto px-6 py-8 relative z-10">
         <header className="flex items-center justify-between mb-16 border-b border-white/5 pb-8">
           <div className="flex items-center gap-4">

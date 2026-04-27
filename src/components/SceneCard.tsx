@@ -6,7 +6,7 @@
 import React from 'react';
 import { Scene, SceneStatus } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, Image as ImageIcon, CheckCircle2, AlertCircle, Loader2, Music, Volume2, Video, Zap, Timer, Play, Pause, Mic, Sliders, Film, Hourglass, Trash2, Move, ChevronRight } from 'lucide-react';
+import { Clock, Image as ImageIcon, CheckCircle2, AlertCircle, Loader2, Music, Volume2, Video, Zap, Timer, Play, Pause, Mic, Sliders, Film, Hourglass, Trash2, Move, ChevronRight, RefreshCw } from 'lucide-react';
 import { generateTTS } from '../services/ttsService';
 
 interface SceneCardProps {
